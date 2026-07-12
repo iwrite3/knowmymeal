@@ -1,0 +1,169 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Body Facts</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #0f0f0f;
+        color: #e0e0e0;
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      h1 {
+        text-align: center;
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #00d2ff, #1a73e8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .subtitle {
+        text-align: center;
+        color: #888;
+        margin-bottom: 32px;
+        font-size: 0.95rem;
+      }
+      .stats {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 0.85rem;
+        color: #666;
+      }
+      .btn-group {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: #1a73e8;
+        color: white;
+      }
+      .btn:hover {
+        background: #1557b0;
+      }
+      .facts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .fact-card {
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 18px 22px;
+        transition: border-color 0.2s;
+      }
+      .fact-card:hover {
+        border-color: #444;
+      }
+      .fact-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+      .fact-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.78rem;
+        color: #666;
+      }
+      .source-badge {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        background: #1a3a5c;
+        color: #5ba3e6;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #555;
+      }
+      .empty-state p {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      .links {
+        text-align: center;
+        margin-top: 32px;
+      }
+      .links a {
+        color: #555;
+        text-decoration: none;
+        font-size: 0.85rem;
+        margin: 0 12px;
+        transition: color 0.2s;
+      }
+      .links a:hover {
+        color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Body Facts</h1>
+      <p class="subtitle">Random human body facts powered by DeepSeek</p>
+      <p class="stats" th:text="'Total facts generated: ' + ${factCount}"></p>
+
+      <div class="btn-group">
+        <form th:action="@{/generate}" method="post" style="display: inline">
+          <input type="hidden" name="source" value="deepseek" />
+          <button type="submit" class="btn">Generate Fact</button>
+        </form>
+      </div>
+
+      <div class="facts-list" th:if="${!facts.isEmpty()}">
+        <div class="fact-card" th:each="fact : ${facts}">
+          <div class="fact-text" th:text="${fact.fact}"></div>
+          <div class="fact-meta">
+            <span class="source-badge" th:text="${fact.sourceApi}"></span>
+            <span
+              th:text="${#temporals.format(fact.createdAt, 'dd MMM yyyy, HH:mm')}"
+            ></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" th:if="${facts.isEmpty()}">
+        <p>No facts yet.</p>
+        <p>Click the button above to generate one!</p>
+      </div>
+
+      <div class="links">
+        <a href="/swagger-ui.html">Swagger UI</a>
+<!--        <a href="/h2-console">H2 Console</a>-->
+        <a href="/api/facts">REST API</a>
+      </div>
+    </div>
+  </body>
+</html>
