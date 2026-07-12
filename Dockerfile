@@ -1,15 +1,27 @@
 FROM eclipse-temurin:21-jdk-alpine AS build
+
 WORKDIR /app
 
+# Copy Maven wrapper and project metadata
+COPY .mvn .mvn
+COPY mvnw .
 COPY pom.xml .
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn dependency:go-offline -B
 
-COPY src ./src
+RUN chmod +x mvnw
+
+# Download dependencies
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn package -DskipTests -B
+    ./mvnw dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Build the application
+RUN --mount=type=cache,target=/root/.m2 \
+    ./mvnw clean package -DskipTests -B
 
 FROM eclipse-temurin:21-jre-alpine
+
 WORKDIR /app
 
 RUN addgroup -S app && adduser -S app -G app
