@@ -1,34 +1,37 @@
 package com.factbody.api.controller;
 
-import com.factbody.api.model.BodyFact;
-import com.factbody.api.service.FactService;
+
+import com.factbody.api.model.NutritionFact;
+
+import com.factbody.api.service.NutritionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-
 @Controller
 public class WebController {
 
-    private final FactService factService;
+    private final NutritionService nutritionService;
 
-    public WebController(FactService factService) {
-        this.factService = factService;
+    public WebController(NutritionService nutritionService) {
+        this.nutritionService = nutritionService;
     }
 
     @GetMapping("/")
     public String index(Model model) {
-        List<BodyFact> facts = factService.getAllFacts();
+        List<NutritionFact> facts = nutritionService.getAllFacts();
         model.addAttribute("facts", facts);
-        model.addAttribute("factCount", factService.getFactCount());
+        model.addAttribute("factCount", nutritionService.getFactCount());
         return "index";
     }
 
     @PostMapping("/generate")
-    public String generate(Model model) {
-        factService.generateFact();
+    public String generate(@RequestParam("foodName") String foodName, Model model) {
+        // The food string comes from your HTML form input
+        nutritionService.generateFact(foodName);
         return "redirect:/";
     }
 }

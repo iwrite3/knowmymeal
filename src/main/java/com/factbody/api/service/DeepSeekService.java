@@ -2,52 +2,64 @@ package com.factbody.api.service;
 
 import com.factbody.api.model.DeepSeekRequest;
 import com.factbody.api.model.DeepSeekResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class DeepSeekService {
 
-    private static final Logger log = LoggerFactory.getLogger(DeepSeekService.class);
-
-    private final RestClient restClient;
-
     @Value("${deepseek.api.key}")
     private String apiKey;
 
-    @Value("${deepseek.api.url}")
+    @Value("${deepseek.api.url:https://api.deepseek.com/v1/chat/completions}")
     private String apiUrl;
 
-    public DeepSeekService(RestClient restClient) {
-        this.restClient = restClient;
+    private final RestTemplate restTemplate;
+
+    public DeepSeekService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
-    public String getRandomBodyFact() {
-        String prompt = "Give me one fascinating, lesser-known random fact about the human body. "
-                + "Keep it to 1-2 sentences. Do not number it. Just state the fact directly.";
+    /**
+     * Calls the DeepSeek API with a specific prompt about the user's food.
+     */
+    public String callApi(String prompt) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
 
-        DeepSeekRequest request = new DeepSeekRequest(prompt);
+        // System prompt instructs DeepSeek on HOW to behave.
+        // User prompt contains the actual food to analyze.
+        DeepSeekRequest request = new DeepSeekRequest(
+                "You are an expert nutritionist. Analyze the food provided by the user. " +
+                        "Provide the response in two clear sections: " +
+                        "1. Nutritional Values (Calories, Protein, Carbs,Fibres ,Fats) " +
+                        "2. Recommendation (Is this a good/healthy meal and why?)",
+                prompt
+        );
+
+        HttpEntity<DeepSeekRequest> entity = new HttpEntity<>(request, headers);
 
         try {
-            DeepSeekResponse response = restClient.post()
-                    .uri(apiUrl)
-                    .header("Authorization", "Bearer " + apiKey)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(request)
-                    .retrieve()
-                    .body(DeepSeekResponse.class);
+            ResponseEntity<DeepSeekResponse> response = restTemplate.postForEntity(
+                    apiUrl,
+                    entity,
+                    DeepSeekResponse.class
+            );
 
-            if (response != null && response.getChoices() != null && !response.getChoices().isEmpty()) {
-                return response.getChoices().get(0).getMessage().getContent().trim();
+            if (response.getBody() != null && response.getBody().getChoices() != null && !response.getBody().getChoices().isEmpty()) {
+                return response.getBody().getChoices().get(0).getMessage().getContent();
+            } else {
+                return "Could not generate nutrition facts at this time.";
             }
-            return "No fact returned from DeepSeek.";
         } catch (Exception e) {
-            log.error("DeepSeek API error: {}", e.getMessage());
-            return "Failed to fetch fact from DeepSeek: " + e.getMessage();
+            // Log the error in a real application
+            return "Error communicating with AI service: " + e.getMessage();
         }
     }
 }

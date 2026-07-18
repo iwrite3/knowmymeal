@@ -1,7 +1,7 @@
 package com.factbody.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -11,8 +11,18 @@ public class DeepSeekRequest {
     private List<Message> messages;
     private double temperature;
 
-    public DeepSeekRequest() {}
+    // UPDATED: Now properly handles the system instructions and the user's food prompt
+    public DeepSeekRequest(String systemInstruction, String userPrompt) {
+        this.model = "deepseek-chat";
+        this.messages = List.of(
+                new Message("system", systemInstruction),
+                new Message("user", userPrompt)
+        );
+        // Lowered temperature to 0.7 for more factual and consistent nutritional data
+        this.temperature = 0.7;
+    }
 
+    // Kept the original constructor just in case you need it elsewhere
     public DeepSeekRequest(String prompt) {
         this.model = "deepseek-chat";
         this.messages = List.of(new Message("user", prompt));

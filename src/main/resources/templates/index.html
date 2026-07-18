@@ -1,169 +1,156 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Body Facts</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family:
-          "Segoe UI",
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: #0f0f0f;
-        color: #e0e0e0;
-        min-height: 100vh;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 40px 20px;
-      }
-      h1 {
-        text-align: center;
-        font-size: 2.2rem;
-        margin-bottom: 8px;
-        background: linear-gradient(135deg, #00d2ff, #1a73e8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .subtitle {
-        text-align: center;
-        color: #888;
-        margin-bottom: 32px;
-        font-size: 0.95rem;
-      }
-      .stats {
-        text-align: center;
-        margin-bottom: 24px;
-        font-size: 0.85rem;
-        color: #666;
-      }
-      .btn-group {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        margin-bottom: 40px;
-        flex-wrap: wrap;
-      }
-      .btn {
-        padding: 12px 24px;
-        border: none;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        background: #1a73e8;
-        color: white;
-      }
-      .btn:hover {
-        background: #1557b0;
-      }
-      .facts-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-      .fact-card {
-        background: #1a1a1a;
-        border: 1px solid #2a2a2a;
-        border-radius: 10px;
-        padding: 18px 22px;
-        transition: border-color 0.2s;
-      }
-      .fact-card:hover {
-        border-color: #444;
-      }
-      .fact-text {
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 10px;
-      }
-      .fact-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.78rem;
-        color: #666;
-      }
-      .source-badge {
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        background: #1a3a5c;
-        color: #5ba3e6;
-      }
-      .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #555;
-      }
-      .empty-state p {
-        font-size: 1.1rem;
-        margin-bottom: 8px;
-      }
-      .links {
-        text-align: center;
-        margin-top: 32px;
-      }
-      .links a {
-        color: #555;
-        text-decoration: none;
-        font-size: 0.85rem;
-        margin: 0 12px;
-        transition: color 0.2s;
-      }
-      .links a:hover {
-        color: #aaa;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Body Facts</h1>
-      <p class="subtitle">Random human body facts powered by DeepSeek</p>
-      <p class="stats" th:text="'Total facts generated: ' + ${factCount}"></p>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meal Nutrition Analyzer</title>
+  <!-- Adding Marked.js to convert Markdown to HTML -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .stats {
+      text-align: center;
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 12px;
+      width: 65%;
+      margin-right: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 24px;
+      background-color: #198754;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #157347;
+    }
+    .fact-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      border-left: 5px solid #198754;
+    }
+    .fact-card h3 {
+      margin-top: 0;
+      color: #198754;
+      text-transform: capitalize;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
 
-      <div class="btn-group">
-        <form th:action="@{/generate}" method="post" style="display: inline">
-          <input type="hidden" name="source" value="deepseek" />
-          <button type="submit" class="btn">Generate Fact</button>
-        </form>
-      </div>
+    /* Styles to make the AI's markdown tables look good */
+    .ai-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+    .ai-content th, .ai-content td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .ai-content th {
+      background-color: #f2f2f2;
+    }
 
-      <div class="facts-list" th:if="${!facts.isEmpty()}">
-        <div class="fact-card" th:each="fact : ${facts}">
-          <div class="fact-text" th:text="${fact.fact}"></div>
-          <div class="fact-meta">
-            <span class="source-badge" th:text="${fact.sourceApi}"></span>
-            <span
-              th:text="${#temporals.format(fact.createdAt, 'dd MMM yyyy, HH:mm')}"
-            ></span>
-          </div>
-        </div>
-      </div>
+    .meta-info {
+      font-size: 0.85em;
+      color: #adb5bd;
+      text-align: right;
+      margin-top: 15px;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+    .empty-state {
+      text-align: center;
+      color: #6c757d;
+      padding: 40px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
 
-      <div class="empty-state" th:if="${facts.isEmpty()}">
-        <p>No facts yet.</p>
-        <p>Click the button above to generate one!</p>
-      </div>
+<h1>🥗 Meal Nutrition Analyzer</h1>
 
-      <div class="links">
-        <a href="/swagger-ui.html">Swagger UI</a>
-<!--        <a href="/h2-console">H2 Console</a>-->
-        <a href="/api/facts">REST API</a>
-      </div>
-    </div>
-  </body>
+<div class="stats">
+  <p>Total meals analyzed: <strong th:text="${factCount}">0</strong></p>
+</div>
+
+<!-- The Input Form -->
+<div class="form-container">
+  <form th:action="@{/generate}" method="post">
+    <input type="text" name="foodName" placeholder="What did you eat? (e.g., 1 moong dal chila)" required>
+    <button type="submit">Analyze Meal</button>
+  </form>
+</div>
+
+<h2>Your Food Diary</h2>
+
+<!-- Empty State -->
+<div th:if="${facts == null or facts.isEmpty()}" class="empty-state">
+  <p>No meals analyzed yet. Enter a food above to get your first nutrition breakdown!</p>
+</div>
+
+<!-- The list of previously generated nutrition facts -->
+<div th:each="fact : ${facts}" class="fact-card">
+  <h3 th:text="${fact.foodName}">Food Name</h3>
+
+  <!-- We store the raw AI response in a data attribute and let JS parse it -->
+  <div class="ai-content" th:attr="data-raw-content=${fact.nutritionDetails}"></div>
+
+  <div class="meta-info">
+    Generated on: <span th:text="${#temporals.format(fact.createdAt, 'dd-MMM-yyyy HH:mm')}">Date</span> |
+    Source: <span th:text="${fact.sourceApi}">API</span>
+  </div>
+</div>
+
+<!-- Script to convert the Markdown into clean HTML on page load -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const aiContentDivs = document.querySelectorAll('.ai-content');
+    aiContentDivs.forEach(div => {
+      const rawContent = div.getAttribute('data-raw-content');
+      if (rawContent) {
+        div.innerHTML = marked.parse(rawContent);
+      }
+    });
+  });
+</script>
+
+</body>
 </html>
