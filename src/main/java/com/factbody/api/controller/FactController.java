@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/facts") // Consider changing this to "/api/nutrition" in the future!
+@RequestMapping("/api/facts") 
 @Tag(name = "Nutrition Facts", description = "Endpoints for analyzing food and retrieving nutrition facts") // Updated description
 public class FactController {
 
@@ -24,7 +24,7 @@ public class FactController {
         this.nutritionService = nutritionService;
     }
 
-    @PostMapping("/generate") // Fixed typo here (was "/generte")
+    @PostMapping("/generate") 
     @Operation(summary = "Generate a nutrition fact for a specific food using DeepSeek")
     public ResponseEntity<ApiResponse<NutritionFact>> generate(@RequestParam("foodName") String foodName) {
         NutritionFact fact = nutritionService.generateFact(foodName);
