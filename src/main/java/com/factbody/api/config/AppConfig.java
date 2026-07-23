@@ -36,8 +36,8 @@ public class AppConfig implements WebMvcConfigurer {
     public OpenAPI bodyFactsOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Body Facts API")
-                        .description("API that generates random human body facts using DeepSeek and Gemini AI")
+                        .title("Food Facts API")
+                        .description("API that generates food nutrition using DeepSeek")
                         .version("1.0.0"));
     }
 }
